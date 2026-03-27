@@ -1,2 +1,2 @@
 # CSC4033
-Tia Ransom, Cameron Storer, Ashton Harrell, Jagat Laxmi De Bhattarai
+Tia Ransom, Cameron Storer, Ashton Harrell, Khai Tran Nguyen
