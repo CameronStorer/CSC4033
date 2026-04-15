@@ -1,98 +1,90 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
+import { Text, View, StyleSheet, TextInput } from "react-native";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+export default function Index() {
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <View style={styles.screen}>
+      <View style={styles.top}>
+        <Text style={styles.text}>Z O N O</Text>
+      </View>
+
+      <View style={styles.bottom} />
+      <View style={styles.centerLoginBox}>
+        <View style={styles.loginBox}>
+            <Text style={styles.loginText}>Welcome to ZONO, Log In!</Text>
+          
+            <TextInput 
+              style={styles.input} 
+              placeholder="USERNAME"
+              placeholderTextColor="#c0c0c0"
+            />
+
+            <TextInput 
+              style={styles.input} 
+              placeholder="PASSWORD"
+              placeholderTextColor="#c0c0c0"
+            />
+        </View>
+      </View>
+    </View>
   );
 }
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+  top: { // gray at top
+    flex: 0.08, // 0.08/1 of the screen
+    justifyContent: "flex-start", // vertical placement of Z O N O 
+    alignItems: "center", // horizontal placement Z O N O
+    backgroundColor: '#898989',
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  bottom: { // blue background
+    flex: 0.92, // 0.92/1 of the screen
+    backgroundColor: "#1fa3fc"
   },
-  title: {
-    textAlign: 'center',
+  text: { // wording of  Z O N O
+    fontSize: 50, 
+      fontWeight: "bold", 
+      fontFamily: "monospace",
+      color: "#ffff",
   },
-  code: {
-    textTransform: 'uppercase',
+  centerLoginBox: { // keep white login box center
+    position: "absolute",
+    top: 50,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    // zIndex: 10, // for layering, keeps everying in the login box in front
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  loginBox: { // white login box
+    width: 450,
+    height: 450,
+    backgroundColor: "white",
+    borderRadius: 30, // curveyness of white box
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loginText: { // "Welcome to ZONO, Log In !"
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#898989",
+    fontFamily: "monospace",
+    textAlign: "center",
+    width: "60%", // the width the words spread out,
+    marginBottom: 20, // adds a litte more space under the welcomeWords
+  },
+  input: { // input boxes
+    fontFamily: "monospace",
+    height: 35,
+    width: 250,
+    margin: 20,
+    borderWidth: 2,
+    borderColor: "#898989",
   },
 });
