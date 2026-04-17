@@ -10,7 +10,7 @@ export default function MapComponent() {
         border: 1,
         flex: 1,
       }}
-      src="https://www.openstreetmap.org/export/embed.html?bbox=-122.45,37.75,-122.39,37.80&layer=mapnik"
+      src="https://www.openstreetmap.org/export/embed.html?bbox=-92.67,32.51,-92.62,32.55&layer=mapnik"
     />
   );
 }
