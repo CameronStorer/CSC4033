@@ -25,8 +25,8 @@ export default function AppTabs() {
           <TabTrigger name="login" href="/login" asChild>
             <TabButton>Login</TabButton>
           </TabTrigger>
-          <TabTrigger name="explore" href="/map" asChild>
-            <TabButton>Explore</TabButton>
+          <TabTrigger name="map" href="/map" asChild>
+            <TabButton>Map</TabButton>
           </TabTrigger>
           <TabTrigger name="database" href="/database" asChild>
             <TabButton>database</TabButton>
@@ -58,22 +58,7 @@ export function CustomTabList(props: TabListProps) {
   return (
     <View {...props} style={styles.tabListContainer}>
       <ThemedView type="backgroundElement" style={styles.innerContainer}>
-        <ThemedText type="smallBold" style={styles.brandText}>
-          Expo Starter
-        </ThemedText>
-
         {props.children}
-
-        <ExternalLink href="https://docs.expo.dev" asChild>
-          <Pressable style={styles.externalPressable}>
-            <ThemedText type="link">Docs</ThemedText>
-            <SymbolView
-              tintColor={colors.text}
-              name={{ ios: 'arrow.up.right.square', web: 'link' }}
-              size={12}
-            />
-          </Pressable>
-        </ExternalLink>
       </ThemedView>
     </View>
   );
@@ -83,30 +68,24 @@ const styles = StyleSheet.create({
   tabListContainer: {
     position: 'absolute',
     width: '100%',
-    padding: Spacing.three,
+    padding: Spacing.two,        // reduced from three
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
   },
   innerContainer: {
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.five,
+    paddingVertical: Spacing.two,      // reduced from two
+    paddingHorizontal: Spacing.three,  // reduced from five
     borderRadius: Spacing.five,
     flexDirection: 'row',
     alignItems: 'center',
-    flexGrow: 1,
-    gap: Spacing.two,
-    maxWidth: MaxContentWidth,
-  },
-  brandText: {
-    marginRight: 'auto',
-  },
-  pressed: {
-    opacity: 0.7,
+    justifyContent: 'center',          // add this
+    gap: Spacing.one,                  // reduced from two
+    maxWidth: 300,                     // constrain width to center items
   },
   tabButtonView: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.three,
+    paddingVertical: 4,                // reduced from Spacing.one
+    paddingHorizontal: Spacing.two,    // reduced from three
     borderRadius: Spacing.three,
   },
   externalPressable: {

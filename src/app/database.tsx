@@ -6,9 +6,10 @@ DATABASE VIEW PAGE
 
 // TabTwoScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Platform, StatusBar, ActivityIndicator } from 'react-native';
 import { styles } from '@/components/db/admin_panel_styles'; 
 import { DATABASE_CONFIG, fetchTableData, deleteRow } from '@/db/db-react-logic';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TabTwoScreen() {
   const [data, setData] = useState<any[]>([]);
@@ -24,10 +25,13 @@ export default function TabTwoScreen() {
   };
 
   useEffect(() => { loadData(); }, []);
-
+  
+  // page contents
   return (
-    <View style={{ flex: 1, backgroundColor: '#0a0a0f' }}>
-      <ScrollView contentContainerStyle={styles.container}>
+  // code to ensure that the page content doesn't fall under the nav bar
+  <SafeAreaView style={{ flex: 1, backgroundColor: '#0a0a0f',
+      paddingTop: Platform.OS === 'web' ? 80 : 0}} edges={['top']}>
+        <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.pageTitle}>{activeConfig.label}</Text>
         
         <View style={styles.tableCard}>
@@ -66,6 +70,6 @@ export default function TabTwoScreen() {
           </ScrollView>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView >
   );
 }

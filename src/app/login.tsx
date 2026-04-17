@@ -1,9 +1,20 @@
+/*////////////////////////////////////////////////////////////////////////
+LOGIN PAGE
+  - Option for user to login with Zono account
+  - Or login with their Google account
+*/////////////////////////////////////////////////////////////////////////
+
+// necessary imports
 import React from 'react';
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
+import { Text, View, StyleSheet, Platform, TextInput, TouchableOpacity, Image } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-
+// page layout
 export default function Index() {
   return (
+  // code to ensure that the page content doesn't fall under the nav bar
+  <SafeAreaView style={{ flex: 1, backgroundColor: '#898989',
+      paddingTop: Platform.OS === 'web' ? 80 : 0}} edges={['top']}>
     <View style={styles.screen}>
       <View style={styles.top}>
         <Text style={styles.text}>Z O N O</Text>
@@ -36,33 +47,12 @@ export default function Index() {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </View></SafeAreaView>
   );
 }
 
-
+// styling
 const styles = StyleSheet.create({
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginTop: 12,
-    gap: 10,
-  },
-  googleIcon: {
-    width: 20,
-    height: 20,
-  },
-  googleText: {
-    color: '#444',
-    fontSize: 14,
-    fontWeight: '600',
-  },
   screen: {
     flex: 1,
   },
@@ -93,6 +83,10 @@ const styles = StyleSheet.create({
     // zIndex: 10, // for layering, keeps everying in the login box in front
   },
   loginBox: { // white login box
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
     width: 450,
     height: 450,
     backgroundColor: "white",
@@ -116,5 +110,26 @@ const styles = StyleSheet.create({
     margin: 20,
     borderWidth: 2,
     borderColor: "#898989",
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginTop: 12,
+    gap: 10,
+  },
+  googleIcon: {
+    width: 20,
+    height: 20,
+  },
+  googleText: {
+    color: '#444',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
