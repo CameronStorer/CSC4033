@@ -95,4 +95,8 @@ const styles = StyleSheet.create({
     gap: Spacing.one,
     marginLeft: Spacing.three,
   },
+  pressed: {          // add this back
+    opacity: 0.7,
+  },
+
 });

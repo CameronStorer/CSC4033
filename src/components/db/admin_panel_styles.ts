@@ -2,49 +2,77 @@
 import { StyleSheet, Dimensions, Platform } from 'react-native';
 import { Spacing } from '@/constants/theme';
 
-export const styles = StyleSheet.create({
-  container: { width: '100%', maxWidth: 1000, paddingHorizontal: Spacing.four },
-  tableCard: {
-    backgroundColor: '#0f0f1a',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#1e1e2e',
-    overflow: 'hidden',
+const styles = StyleSheet.create({
+  container: { 
+    padding: 20, 
+    paddingBottom: 100 
   },
-  colHeaderRow: {
-    flexDirection: 'row',
-    backgroundColor: '#13131f',
-    padding: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1e1e2e',
+  headerActionRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    marginBottom: 20 
   },
-  colHeader: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#818cf8',
-    textTransform: 'uppercase',
-  },
-  dataRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#13131f',
-    alignItems: 'center',
-  },
-  dataCell: { fontSize: 13, color: '#94a3b8' },
-
   pageTitle: { 
-    fontSize: 28, 
-    fontWeight: '700', 
-    color: '#f1f5f9', 
-    letterSpacing: -0.75,
-    marginBottom: 4 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    color: '#fff' 
   },
-  pageSubtitle: { 
-    fontSize: 13, 
-    color: '#64748b', 
-    marginBottom: Spacing.five 
+  addButton: { 
+    backgroundColor: '#6200ee', 
+    paddingHorizontal: 15, 
+    paddingVertical: 8, 
+    borderRadius: 8 
   },
-  // ... (Keep other specific modal and button styles here)
+  chartCard: { 
+    marginBottom: 25, 
+    alignItems: 'center' 
+  },
+  chartTitle: { 
+    color: '#aaa', 
+    marginBottom: 10, 
+    alignSelf: 'flex-start' 
+  },
+  tableCard: { 
+    backgroundColor: '#16161d', 
+    borderRadius: 12, 
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#333'
+  },
+  colHeaderRow: { 
+    flexDirection: 'row', 
+    backgroundColor: '#1f1f27', 
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333'
+  },
+  headerCell: { 
+    color: '#888', 
+    fontWeight: 'bold', 
+    paddingHorizontal: 10 
+  },
+  dataRow: { 
+    flexDirection: 'row', 
+    paddingVertical: 15, 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#222',
+    alignItems: 'center'
+  },
+  dataCell: { 
+    color: '#eee', 
+    paddingHorizontal: 10 
+  },
+  actionCell: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-around' 
+  },
+  editBtn: { 
+    color: '#4dabf7', 
+    fontWeight: '600' 
+  },
+  deleteBtn: { 
+    color: '#ff6b6b', 
+    fontWeight: '600' 
+  }
 });
