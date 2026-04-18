@@ -12,9 +12,23 @@ export const currentUser: UserLocation = {
   longitude: -92.647235,
 };
 
-export const friendUser: UserLocation = {
+export const friends: UserLocation []= [{
   id: 'user2',
   name: 'Cameron',
   latitude: 32.533261,
   longitude: -92.650785,
-};
+},
+{
+  id: 'user3',
+  name: 'Tia',
+  latitude: 32.529175,
+  longitude: -92.643604,
+},
+{
+  id: 'user4',
+  name: 'Ashton',
+  latitude: 32.522681,
+  longitude: -92.642888,
+}
+];
+

@@ -1,43 +1,131 @@
 // default file that expo will grab for the import in map.tsx
 // if you are using Expo Go/are on mobile
-
-import MapView, {Marker} from 'react-native-maps';
-import { StyleSheet } from 'react-native';
-import { currentUser, friendUser } from '@/data/mockLocations';
-
+import React, { useMemo, useState } from 'react';
+import MapView, {Marker, Polyline, Callout} from 'react-native-maps';
+import { StyleSheet, View, Text } from 'react-native';
+import { currentUser, friends, UserLocation } from '@/data/mockLocations';
+import { getDistanceMeters, formatDistance } from '@/utils/distance';
+// import * as Location from 'expo-location';
 
 export default function MapComponent() {
+
+  // the current selected friend, then use the function, base on select state
+  const[selectedFriend, setSelectedFriend] = useState< UserLocation| null>(null); // null default
+  // const[selectedPlaceName, setSelectedPlaceName] = useState<string>('Loading location...');
+
+  // useMemo only recompute distance text when selected friend change
+  const distanceText = useMemo( () => {
+    if (!selectedFriend) return '';
+    const meters = getDistanceMeters(currentUser, selectedFriend);
+    return formatDistance(meters);
+  }, [selectedFriend]); //recompute distance text when we have selected friend
+
+
   return (
-    <MapView
-      style={styles.map}
-      initialRegion={{
-        latitude: 32.526542,
-        longitude: -92.648977,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      }}
-    >
-      <Marker
-        coordinate={{
+    <View style={styles.container}>
+      <MapView
+        style={styles.map}
+        initialRegion={{
           latitude: currentUser.latitude,
           longitude: currentUser.longitude,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
         }}
-        title={currentUser.name}
-        description="Current user"
-      />
+      >
+        <Marker
+          coordinate={{
+            latitude: currentUser.latitude,
+            longitude: currentUser.longitude,
+          }}
+          title={currentUser.name}
+          description="Your location"
+        /> 
+        
+        {friends.map( (friend) => (
+          <Marker
+            key = {friend.id}
+            coordinate={{
+              latitude: friend.latitude,
+              longitude: friend.longitude
+            }}
+            onPress= { () => setSelectedFriend(friend)}
+          >
+            <Callout>
+              <View style={styles.calloutBox}>
+                <Text style={styles.calloutTitle}>{friend.name}</Text>
+                <Text>Friend</Text>
+                <Text>
+                  Location: {friend.latitude.toFixed(4)}, {friend.longitude.toFixed(4)}
+                </Text>
+                <Text>Distance: {distanceText || formatDistance(getDistanceMeters(currentUser, friend))}</Text>
+              </View>
+            </Callout>
+          </Marker>
+        ))}
 
-      <Marker
-        coordinate={{
-          latitude: friendUser.latitude,
-          longitude: friendUser.longitude,
-        }}
-        title={friendUser.name}
-        description="Friend"
-      />
-    </MapView>
+        {selectedFriend && (
+          <Polyline
+            coordinates={[
+              {
+                latitude: currentUser.latitude,
+                longitude: currentUser.longitude,
+              },
+              {
+                latitude: selectedFriend.latitude,
+                longitude: selectedFriend.longitude,
+              },
+            ]}
+            strokeColor="#15fbef"
+            strokeWidth={6}
+          />
+        )}
+      </MapView>
+
+      {selectedFriend && (
+        <View style={styles.bottomCard}>
+          <Text style={styles.cardTitle}>{selectedFriend.name}</Text>
+          <Text>Type: Friend</Text>
+          <Text>
+            Location: {selectedFriend.latitude.toFixed(4)}, {selectedFriend.longitude.toFixed(4)}
+          </Text>
+          <Text>Distance: {distanceText}</Text>
+        </View>
+      )}
+    </View>
   );
 }
 
+
 const styles = StyleSheet.create({
-  map: { flex: 1 },
+  container: {
+    flex: 1,
+  },
+  map: {
+    flex: 1,
+  },
+  calloutBox: {
+    minWidth: 160,
+    padding: 4,
+  },
+  calloutTitle: {
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  bottomCard: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    bottom: 90,
+    backgroundColor: "#80e0db",
+    padding: 16,
+    borderRadius: 16,
+
+  },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: '600',
+    marginBottom: 6,
+    color:"white",
+    
+  },
 });
