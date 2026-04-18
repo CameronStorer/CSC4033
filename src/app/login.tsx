@@ -5,49 +5,84 @@ LOGIN PAGE
 */////////////////////////////////////////////////////////////////////////
 
 // necessary imports
-import React from 'react';
-import { Text, View, StyleSheet, Platform, TextInput, TouchableOpacity, Image } from "react-native";
+import React, { useState } from 'react';
+import { Alert, Text, View, StyleSheet, Platform, TextInput, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '@/db/supabase';
 
 // page layout
-export default function Index() {
-  return (
-  // code to ensure that the page content doesn't fall under the nav bar
-  <SafeAreaView style={{ flex: 1, backgroundColor: '#898989',
-      paddingTop: Platform.OS === 'web' ? 80 : 0}} edges={['top']}>
-    <View style={styles.screen}>
-      <View style={styles.top}>
-        <Text style={styles.text}>Z O N O</Text>
-      </View>
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-      <View style={styles.bottom} />
-      <View style={styles.centerLoginBox}>
-        <View style={styles.loginBox}>
+  // sends the email and password to supabase
+  async function handleLogin() {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      Alert.alert('Login Error', error.message);
+    } else {
+      Alert.alert('Success', 'You are logged in.');
+    }
+  }
+
+  return (
+    // code to ensure that the page content doesn't fall under the nav bar
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: '#898989',
+        paddingTop: Platform.OS === 'web' ? 80 : 0
+      }}
+      edges={['top']}
+    >
+      <View style={styles.screen}>
+        <View style={styles.top}>
+          <Text style={styles.text}>Z O N O</Text>
+        </View>
+
+        <View style={styles.bottom} />
+
+        <View style={styles.centerLoginBox}>
+          <View style={styles.loginBox}>
             <Text style={styles.loginText}>Welcome to ZONO, Log In!</Text>
-          
-            <TextInput 
-              style={styles.input} 
-              placeholder="USERNAME"
+
+            <TextInput
+              style={styles.input}
+              placeholder="EMAIL"
               placeholderTextColor="#c0c0c0"
+              autoCapitalize="none" // makes the email not capitalize email
+              value={email}
+              onChangeText={setEmail}
             />
 
-            <TextInput 
-              style={styles.input} 
+            <TextInput
+              style={styles.input}
               placeholder="PASSWORD"
               placeholderTextColor="#c0c0c0"
+              secureTextEntry // hides the password text
+              value={password}
+              onChangeText={setPassword}
             />
 
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+              <Text style={styles.loginButtonText}>LOG IN</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.googleButton} onPress={() => {}}>
-            <Image
-              source={{ uri: 'https://www.google.com/favicon.ico' }}
-              style={styles.googleIcon}
-            />
-            <Text style={styles.googleText}>Login with Google</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.googleButton} onPress={() => {}}>
+              <Image
+                source={{ uri: 'https://www.google.com/favicon.ico' }}
+                style={styles.googleIcon}
+              />
+              <Text style={styles.googleText}>Login with Google</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View></SafeAreaView>
+    </SafeAreaView>
   );
 }
 
@@ -58,7 +93,7 @@ const styles = StyleSheet.create({
   },
   top: { // gray at top
     flex: 0.08, // 0.08/1 of the screen
-    justifyContent: "flex-start", // vertical placement of Z O N O 
+    justifyContent: "flex-start", // vertical placement of Z O N O
     alignItems: "center", // horizontal placement Z O N O
     backgroundColor: '#898989',
   },
@@ -66,11 +101,11 @@ const styles = StyleSheet.create({
     flex: 0.92, // 0.92/1 of the screen
     backgroundColor: "#1fa3fc"
   },
-  text: { // wording of  Z O N O
-    fontSize: 50, 
-      fontWeight: "bold", 
-      fontFamily: "monospace",
-      color: "#ffff",
+  text: { // wording of Z O N O
+    fontSize: 50,
+    fontWeight: "bold",
+    fontFamily: "monospace",
+    color: "#ffff",
   },
   centerLoginBox: { // keep white login box center
     position: "absolute",
@@ -80,7 +115,7 @@ const styles = StyleSheet.create({
     left: 0,
     justifyContent: "center",
     alignItems: "center",
-    // zIndex: 10, // for layering, keeps everying in the login box in front
+    // zIndex: 10, // for layering, keeps everything in the login box in front
   },
   loginBox: { // white login box
     shadowColor: "#000000",
@@ -94,14 +129,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  loginText: { // "Welcome to ZONO, Log In !"
+  loginText: { // "Welcome to ZONO, Log In!"
     fontSize: 28,
     fontWeight: "bold",
     color: "#898989",
     fontFamily: "monospace",
     textAlign: "center",
-    width: "60%", // the width the words spread out,
-    marginBottom: 20, // adds a litte more space under the welcomeWords
+    width: "60%", // the width the words spread out
+    marginBottom: 20, // adds a little more space under the welcome words
   },
   input: { // input boxes
     fontFamily: "monospace",
@@ -110,8 +145,21 @@ const styles = StyleSheet.create({
     margin: 20,
     borderWidth: 2,
     borderColor: "#898989",
+    paddingHorizontal: 10,
   },
-  googleButton: {
+  loginButton: { // regular login button
+    backgroundColor: '#1fa3fc',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    marginTop: 10,
+  },
+  loginButtonText: { // wording inside login button
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  googleButton: { // google login button
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
