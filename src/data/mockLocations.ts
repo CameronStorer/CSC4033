@@ -21,8 +21,8 @@ export const friends: UserLocation []= [{
 {
   id: 'user3',
   name: 'Tia',
-  latitude: 32.529175,
-  longitude: -92.643604,
+  latitude: 32.523652,
+  longitude: -92.645216,
 },
 {
   id: 'user4',

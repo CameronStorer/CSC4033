@@ -5,13 +5,13 @@ import MapView, {Marker, Polyline, Callout} from 'react-native-maps';
 import { StyleSheet, View, Text } from 'react-native';
 import { currentUser, friends, UserLocation } from '@/data/mockLocations';
 import { getDistanceMeters, formatDistance } from '@/utils/distance';
-// import * as Location from 'expo-location';
+import * as Location from 'expo-location';
 
 export default function MapComponent() {
 
   // the current selected friend, then use the function, base on select state
   const[selectedFriend, setSelectedFriend] = useState< UserLocation| null>(null); // null default
-  // const[selectedPlaceName, setSelectedPlaceName] = useState<string>('Loading location...');
+  const[selectedPlaceName, setSelectedPlaceName] = useState<string>('Loading location...');
 
   // useMemo only recompute distance text when selected friend change
   const distanceText = useMemo( () => {
@@ -20,6 +20,36 @@ export default function MapComponent() {
     return formatDistance(meters);
   }, [selectedFriend]); //recompute distance text when we have selected friend
 
+  // function get the name of place, async- get data from server
+  async function handleFriendPress(friend: UserLocation){
+    setSelectedFriend(friend);
+    setSelectedPlaceName('Loading Location...');
+    try {
+      const results = await Location.reverseGeocodeAsync({
+        latitude: friend.latitude,
+        longitude: friend.longitude,
+      });
+
+      if (results.length > 0) {
+        const place = results[0];
+        const label =
+          [
+            place.name,
+            place.street,
+            place.city,
+            place.region,
+          ]
+            .filter(Boolean)
+            .join(', ') || 'Location found';
+        setSelectedPlaceName(label);
+      } else {
+        setSelectedPlaceName('No place name found');
+      }
+    } catch (error) {
+      setSelectedPlaceName('Could not load location name');
+      console.log('Reverse geocoding error:', error);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -48,7 +78,7 @@ export default function MapComponent() {
               latitude: friend.latitude,
               longitude: friend.longitude
             }}
-            onPress= { () => setSelectedFriend(friend)}
+            onPress={() => handleFriendPress(friend)}
           >
             <Callout>
               <View style={styles.calloutBox}>
@@ -88,6 +118,7 @@ export default function MapComponent() {
           <Text>
             Location: {selectedFriend.latitude.toFixed(4)}, {selectedFriend.longitude.toFixed(4)}
           </Text>
+          <Text>Hey, I’m at {selectedPlaceName} now !! </Text>
           <Text>Distance: {distanceText}</Text>
         </View>
       )}
