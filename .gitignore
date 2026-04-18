@@ -9,3 +9,7 @@ eas.json
 expo-env.d.ts
 package-lock.json
 eas.json
+expo-env.d.ts
+eas.json
+android/
+.expo/*
