@@ -12,4 +12,6 @@ eas.json
 expo-env.d.ts
 eas.json
 android/
-.expo/*
+.expo/
+.expo/devices.json
+.expo/types/router.d.ts
