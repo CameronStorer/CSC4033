@@ -24,14 +24,28 @@ export default function AppTabs() {
           <NativeTabs.Trigger name="map">
             <NativeTabs.Trigger.Label>Map</NativeTabs.Trigger.Label>
             <NativeTabs.Trigger.Icon
-              src={require('@/assets/images/tabIcons/explore.png')}
+              src={require('@/assets/images/map-symbol.png')}
               renderingMode="template"
         />
       </NativeTabs.Trigger>
           <NativeTabs.Trigger name="database">
             <NativeTabs.Trigger.Label>Database</NativeTabs.Trigger.Label>
             <NativeTabs.Trigger.Icon
-              src={require('@/assets/images/tabIcons/explore.png')}
+              src={require('@/assets/images/database-pic.png')}
+              renderingMode="template"
+        />
+        </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="settings">
+            <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Icon
+              src={require('@/assets/images/settings-pic.png')}
+              renderingMode="template"
+        />
+        </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="profile">
+            <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Icon
+              src={require('@/assets/images/profile-pic.png')}
               renderingMode="template"
         />
       </NativeTabs.Trigger>
