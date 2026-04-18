@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   },
   input: { // input boxes
     fontFamily: "monospace",
-    height: 35,
+    height: 45,
     width: 250,
     margin: 20,
     borderWidth: 2,

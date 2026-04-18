@@ -4,7 +4,7 @@ import MapComponent from '@/components/MapComponent';
 import { Stack } from 'expo-router';
 
 // page layout
-export default function Settings() {
+export default function Profile() {
   return (
   // code to ensure that the page content doesn't fall under the nav bar
     <View style={styles.container}>
