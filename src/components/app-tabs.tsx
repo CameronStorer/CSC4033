@@ -1,7 +1,5 @@
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import React from 'react';
+import { NativeTabs, Label, Icon } from 'expo-router/unstable-native-tabs';
 import { useColorScheme } from 'react-native';
-
 import { Colors } from '@/constants/theme';
 
 export default function AppTabs() {
@@ -13,41 +11,25 @@ export default function AppTabs() {
       backgroundColor={colors.background}
       indicatorColor={colors.backgroundElement}
       labelStyle={{ selected: { color: colors.text } }}>
-        
       <NativeTabs.Trigger name="login">
-        <NativeTabs.Trigger.Label>Login</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/home-icon.png')}
-          renderingMode="template"
-        />
-        </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="map">
-            <NativeTabs.Trigger.Label>Map</NativeTabs.Trigger.Label>
-            <NativeTabs.Trigger.Icon
-              src={require('@/assets/images/map-icon.png')}
-              renderingMode="template"
-        />
+        <Label>Login</Label>
+        <Icon src={require('@/assets/images/home-icon.png')} />
       </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="database">
-            <NativeTabs.Trigger.Label>Database</NativeTabs.Trigger.Label>
-            <NativeTabs.Trigger.Icon
-              src={require('@/assets/images/database-icon.png')}
-              renderingMode="template"
-        />
-        </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="settings">
-            <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
-            <NativeTabs.Trigger.Icon
-              src={require('@/assets/images/settings-icon.png')}
-              renderingMode="template"
-        />
-        </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="profile">
-            <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
-            <NativeTabs.Trigger.Icon
-              src={require('@/assets/images/profile-icon.png')}
-              renderingMode="template"
-        />
+      <NativeTabs.Trigger name="map">
+        <Label>Map</Label>
+        <Icon src={require('@/assets/images/map-icon.png')} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="database">
+        <Label>Database</Label>
+        <Icon src={require('@/assets/images/database-icon.png')} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Label>Settings</Label>
+        <Icon src={require('@/assets/images/settings-icon.png')} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <Label>Profile</Label>
+        <Icon src={require('@/assets/images/profile-icon.png')} />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
