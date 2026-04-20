@@ -6,7 +6,7 @@ LOGIN PAGE
 
 // necessary imports
 import React, { useState } from 'react';
-import { Alert, Text, View, StyleSheet, Platform, TextInput, TouchableOpacity, Image } from "react-native";
+import { Alert, Text, View, StyleSheet, Platform, TextInput, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '@/db/supabase';
 
@@ -17,17 +17,38 @@ export default function Login() {
 
   // sends the email and password to supabase
   async function handleLogin() {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
+    // if login is not successfull throw an error, if not show success
+    // for throwing an error in andriod and ios only
+    /*
     if (error) {
       Alert.alert('Login Error', error.message);
+    } else if (data.user) {
+      Alert.alert('Success', 'You are logged in.');
+    } else {
+      Alert.alert('Login Error, Login Failed');
+    }
+  } */
+
+  // for throwing an error in web only
+    if (error) {
+      if (Platform.OS === 'web') {
+        window.alert(`Login Error: ${error.message}`);
+    } else {
+      Alert.alert('Login Error', error.message);
+    }
+  } else {
+      if (Platform.OS === 'web') {
+      window.alert('Success: You are logged in.');
     } else {
       Alert.alert('Success', 'You are logged in.');
     }
   }
+}
 
   return (
     // code to ensure that the page content doesn't fall under the nav bar
@@ -68,17 +89,27 @@ export default function Login() {
               onChangeText={setPassword}
             />
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+
+            <TouchableOpacity 
+              style={styles.loginButton} 
+              onPress={handleLogin}>
+
               <Text style={styles.loginButtonText}>LOG IN</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.googleButton} onPress={() => {}}>
+
+            <TouchableOpacity 
+              style={styles.googleButton} 
+              onPress={() => {}}>
+
               <Image
                 source={{ uri: 'https://www.google.com/favicon.ico' }}
                 style={styles.googleIcon}
               />
               <Text style={styles.googleText}>Login with Google</Text>
             </TouchableOpacity>
+
+
           </View>
         </View>
       </View>
@@ -151,7 +182,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1fa3fc',
     borderRadius: 8,
     paddingVertical: 10,
-    paddingHorizontal: 30,
+    paddingHorizontal: 45,
     marginTop: 10,
   },
   loginButtonText: { // wording inside login button
@@ -171,7 +202,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     gap: 10,
   },
-  googleIcon: {
+  googleIcon: { // google icon size
     width: 20,
     height: 20,
   },
