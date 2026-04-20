@@ -19,7 +19,7 @@ import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 export default function AppTabs() {
   return (
     <Tabs>
-      <TabSlot style={{ height: '100%' }} />
+      <TabSlot style={{ height: '100%', width: '110%' }} />
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="login" href="/login" asChild>
@@ -28,8 +28,14 @@ export default function AppTabs() {
           <TabTrigger name="map" href="/map" asChild>
             <TabButton>Map</TabButton>
           </TabTrigger>
+          <TabTrigger name="settings" href="/settings" asChild>
+            <TabButton>Settings</TabButton>
+          </TabTrigger>
+          <TabTrigger name="profile" href="/profile" asChild>
+            <TabButton>Profile</TabButton>
+          </TabTrigger>
           <TabTrigger name="database" href="/database" asChild>
-            <TabButton>database</TabButton>
+            <TabButton>Database</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>
