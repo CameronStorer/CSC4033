@@ -2,7 +2,7 @@
 import { StyleSheet, Dimensions, Platform } from 'react-native';
 import { Spacing } from '@/constants/theme';
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: { 
     padding: 20, 
     paddingBottom: 100 
@@ -74,5 +74,27 @@ const styles = StyleSheet.create({
   deleteBtn: { 
     color: '#ff6b6b', 
     fontWeight: '600' 
-  }
+  },
+  input: { 
+    backgroundColor: '#0a0a0f', 
+    color: '#fff', 
+    padding: 12, 
+    borderRadius: 8, 
+    marginBottom: 15, 
+    borderWidth: 1, 
+    borderColor: '#333', // Subtle border
+    fontSize: 16,
+    // Add a slight shadow for depth
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
 });
