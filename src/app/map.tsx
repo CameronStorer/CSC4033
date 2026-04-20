@@ -3,6 +3,7 @@ import { View, StyleSheet, Platform } from 'react-native';
 import MapComponent from '@/components/MapComponent';
 import { Stack } from 'expo-router';
 
+
 // page layout
 export default function Map() {
   return (
