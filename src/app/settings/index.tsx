@@ -5,9 +5,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
-import { DATABASE_CONFIG, upsertRow } from '@/components/settings/logic';
-import { styles } from '@/components/settings/style'; // Use your external styles
-import { supabase } from '@/components/database/supabase';
+import { DATABASE_CONFIG, upsertRow } from '@/app/settings/logic';
+import { styles } from '@/app/settings/style'; // Use your external styles
+import { supabase } from '@/app/database/supabase';
 
 // admin panel page
 export default function Settings() {

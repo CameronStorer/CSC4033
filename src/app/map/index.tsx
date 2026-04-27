@@ -2,13 +2,13 @@
 // if you are using Expo Go/are on mobile
 import React, { useMemo, useState } from 'react';
 import MapView, {Marker, Polyline, Callout} from 'react-native-maps';
-import { StyleSheet, View, Text, Modal, TextInput, TouchableOpacity, FlatList, } from 'react-native';
+import { View, Text, Modal, TextInput, TouchableOpacity, FlatList, } from 'react-native';
 import * as Location from 'expo-location';
 import { currentUser, friends, UserLocation } from '@/data/mockLocations';
 import { getDistanceMeters, formatDistance } from '@/utils/distance';
 import { searchUserByUserName, sendFriendRequest } from '@/services/friendService';
 import type { UserLocation as FriendSearchUser } from '@/types/friend';
-import { styles } from '@/components/map/styles'; // Use your external styles
+import { styles } from '@/app/map/styles'; // Use your external styles
 
 export default function MapComponent() {
 
