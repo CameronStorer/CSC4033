@@ -1,7 +1,8 @@
 // Required imports
 import { View, StyleSheet, Platform } from 'react-native';
-import MapComponent from '@/components/map/MapComponent';
+import ProfileComponent from '@/components/profile';
 import { Stack } from 'expo-router';
+
 
 // page layout
 export default function Profile() {
@@ -9,7 +10,7 @@ export default function Profile() {
   // code to ensure that the page content doesn't fall under the nav bar
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-      <MapComponent />
+      <ProfileComponent />
     </View>
   );
 }

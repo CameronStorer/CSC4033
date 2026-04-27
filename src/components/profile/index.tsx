@@ -1,16 +1,15 @@
 // Required imports
 import { View, StyleSheet, Platform } from 'react-native';
-import LoginComponent from '@/components/login';
+import MapComponent from '@/components/map';
 import { Stack } from 'expo-router';
 
-
 // page layout
-export default function Login() {
+export default function Profile() {
   return (
   // code to ensure that the page content doesn't fall under the nav bar
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-      <LoginComponent />
+      <MapComponent />
     </View>
   );
 }
