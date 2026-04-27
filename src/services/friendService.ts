@@ -1,4 +1,4 @@
-import {supabase} from '@/db/supabase';
+import {supabase} from '@/app/database/supabase';
 import type {
     FriendPreview,
     FriendRequestRow,

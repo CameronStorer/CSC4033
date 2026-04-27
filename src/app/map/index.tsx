@@ -2,19 +2,13 @@
 // if you are using Expo Go/are on mobile
 import React, { useMemo, useState } from 'react';
 import MapView, {Marker, Polyline, Callout} from 'react-native-maps';
-import { 
-  StyleSheet,
-  View,
-  Text,
-  Modal,
-  TextInput,
-  TouchableOpacity,
-  FlatList, } from 'react-native';
+import { View, Text, Modal, TextInput, TouchableOpacity, FlatList, } from 'react-native';
+import * as Location from 'expo-location';
 import { currentUser, friends, UserLocation } from '@/data/mockLocations';
 import { getDistanceMeters, formatDistance } from '@/utils/distance';
-import * as Location from 'expo-location';
 import { searchUserByUserName, sendFriendRequest } from '@/services/friendService';
 import type { UserLocation as FriendSearchUser } from '@/types/friend';
+import { styles } from '@/app/map/styles'; // Use your external styles
 
 export default function MapComponent() {
 
@@ -274,142 +268,3 @@ export default function MapComponent() {
   );
 }
 
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    flex: 1,
-  },
-  calloutBox: {
-    minWidth: 160,
-    padding: 4,
-  },
-  calloutTitle: {
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  bottomCard: {
-    position: 'absolute',
-    left: 16,
-    right: 16,
-    bottom: 90,
-    backgroundColor: '#80e0db',
-    padding: 16,
-    borderRadius: 16,
-  },
-  cardTitle: {
-    fontSize: 22,
-    fontWeight: '600',
-    marginBottom: 6,
-    color: 'white',
-  },
-
-  addFriendCircle: {
-    position: 'absolute',
-    top: 70,
-    right: 20,
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: '#4da6ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bellCircle: {
-    position: 'absolute',
-    top: 135,
-    right: 20,
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: '#75d1ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  circleButtonText: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: 'white',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.25)',
-    justifyContent: 'flex-start',
-    paddingTop: 110,
-    paddingHorizontal: 16,
-  },
-  modalCard: {
-    backgroundColor: 'white',
-    borderRadius: 22,
-    padding: 16,
-    maxHeight: '70%',
-  },
-  searchHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  searchInput: {
-    flex: 1,
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#d9d9d9',
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    marginRight: 10,
-    backgroundColor: '#fafafa',
-  },
-  closeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#efefef',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  searchInfoText: {
-    textAlign: 'center',
-    color: '#666',
-    marginVertical: 12,
-  },
-  resultRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  resultTextBox: {
-    flex: 1,
-    marginRight: 10,
-  },
-  resultName: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  resultUsername: {
-    fontSize: 14,
-    color: '#777',
-    marginTop: 2,
-  },
-  addButton: {
-    backgroundColor: '#4da6ff',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 12,
-  },
-  requestedButton: {
-    backgroundColor: '#9e9e9e',
-  },
-  addButtonText: {
-    color: 'white',
-    fontWeight: '600',
-  },
-});
