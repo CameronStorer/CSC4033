@@ -6,6 +6,9 @@ export default function AppLayout() {
   const scheme = useColorScheme();
   const colors = Colors[scheme ?? 'light'];
 
+  // navigation bar initialization upon entering (app)/
+  // `NativeTabs.Trigger`is a button to expo router that goes to that
+  // referenced page in the 'name' prop
   return (
     <NativeTabs
       backgroundColor={colors.background}
@@ -14,10 +17,6 @@ export default function AppLayout() {
       <NativeTabs.Trigger name="map/index">
         <Label>Map</Label>
         <Icon src={require('@/assets/images/map-icon.png')} />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="database/index">
-        <Label>Database</Label>
-        <Icon src={require('@/assets/images/database-icon.png')} />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings/index">
         <Label>Settings</Label>
