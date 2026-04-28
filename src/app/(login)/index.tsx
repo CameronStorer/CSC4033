@@ -5,15 +5,17 @@ LOGIN PAGE
 */////////////////////////////////////////////////////////////////////////
 
 // necessary imports
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Text, View, StyleSheet, Platform, TextInput, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase } from '@/app/database/supabase';
+import { supabase } from '@/app/(app)/database/supabase';
 
 // page layout
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   // sends the email and password to supabase
   async function handleLogin() {
@@ -22,33 +24,20 @@ export default function Login() {
       password,
     });
 
-    // if login is not successfull throw an error, if not show success
-    // for throwing an error in andriod and ios only
-    /*
+    // error occured -> throw error message
     if (error) {
-      Alert.alert('Login Error', error.message);
-    } else if (data.user) {
-      Alert.alert('Success', 'You are logged in.');
-    } else {
-      Alert.alert('Login Error, Login Failed');
+      Alert.alert("Login error: ", error.message);
     }
-  } */
-
-  // for throwing an error in web only
-    if (error) {
-      if (Platform.OS === 'web') {
-        window.alert(`Login Error: ${error.message}`);
-    } else {
-      Alert.alert('Login Error', error.message);
+    // correct credentials -> throw success message, reroute user to map
+    else if (data.user) {
+      Alert.alert("Successful login.");
+      router.replace('/(app)/map');
     }
-  } else {
-      if (Platform.OS === 'web') {
-      window.alert('Success: You are logged in.');
-    } else {
-      Alert.alert('Success', 'You are logged in.');
+    // incorrect credentials -> throw failure message
+    else {
+      Alert.alert("Incorrect credentials. Try again!");
     }
   }
-}
 
   return (
     // code to ensure that the page content doesn't fall under the nav bar

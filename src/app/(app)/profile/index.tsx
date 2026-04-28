@@ -1,6 +1,6 @@
 // Required imports
 import { View, StyleSheet, Platform } from 'react-native';
-import MapComponent from '@/app/map/index';
+import MapComponent from '@/app/(app)/map';
 import { Stack } from 'expo-router';
 
 // page layout
