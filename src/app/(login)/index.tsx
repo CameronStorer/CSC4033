@@ -8,7 +8,7 @@ LOGIN PAGE
 import React, { useState } from 'react';
 import { Alert, Text, View, StyleSheet, Platform, TextInput, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase } from '@/app/database/supabase';
+import { supabase } from '@/app/(app)/database/supabase';
 
 // page layout
 export default function Login() {

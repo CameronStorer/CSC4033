@@ -1,5 +1,5 @@
 // db-service.ts
-import { supabase } from '@/app/database/supabase';
+import { supabase } from '@/app/(app)/database/supabase';
 
 // basic configuration to specify which attributes to display in the admin panel
 export const DATABASE_CONFIG = {
