@@ -1,5 +1,3 @@
-// default file that expo will grab for the import in map.tsx
-// if you are using Expo Go/are on mobile
 import React, { useEffect,useMemo, useState } from 'react';
 import MapView, { Marker, Polyline, Callout } from 'react-native-maps';
 import { View, Text, Modal, TextInput, TouchableOpacity, FlatList, Image, ActivityIndicator, Linking } from 'react-native';
@@ -10,10 +8,9 @@ import { searchUserByUserName, sendFriendRequest } from '@/services/friendServic
 import type { UserLocation as FriendSearchUser } from '@/types/friend';
 import { styles } from '@/app/(app)/map/_styles'; // Use your external styles
 import ProfileModal from '@/components/ProfileModal';
-import { getCurrentUserProfile,UserProfile } from '@/services/profileService';
+import { getCurrentUserProfile, UserProfile, updateUserLocation } from '@/services/profileService';
 
 export default function MapComponent() {
-
   // the current selected friend, then use the function, base on select state
   const[selectedFriend, setSelectedFriend] = useState< UserLocation| null>(null); // null default
   const[selectedPlaceName, setSelectedPlaceName] = useState<string>('Loading location...');
@@ -33,13 +30,13 @@ export default function MapComponent() {
   // useMemo : only recompute distance text when selected friend change
   const distanceText = useMemo( () => {
     if (!selectedFriend) return '';
-    const meters = getDistanceMeters(currentUser, selectedFriend);
+    const meters = getDistanceMeters({ latitude: userLocation!.coords.latitude, longitude: userLocation!.coords.longitude }, selectedFriend);
     return formatDistance(meters);
   }, [selectedFriend]); //recompute distance text when we have selected friend
 
   //User Profile use to manipulate the pop-up modal
   const [profileVisible, setProfileVisible] = useState(false);
-  const [profile,setProfile] = useState <UserProfile |null>(null);
+  const [profile, setProfile] = useState <UserProfile |null>(null);
 
   useEffect(() => {
     async function loadProfile(){
@@ -47,7 +44,7 @@ export default function MapComponent() {
       setProfile(userProfile);
     }
     loadProfile();
-  },[]) // the effect does not rerun when it reloading the page
+  }, []) // the effect does not rerun when reloading the page
   
 
   // function get the name of place, async- get data from server
@@ -150,6 +147,7 @@ export default function MapComponent() {
       setUserLocation(currentLocation);
 
       subscription = await Location.watchPositionAsync(
+        // update options for active location polling
         {
           accuracy: Location.Accuracy.High,
           timeInterval: 10000, // in ms
@@ -157,6 +155,13 @@ export default function MapComponent() {
         },
         (updatedLocation) => {
           setUserLocation(updatedLocation);
+          if (profile?.id) {
+            updateUserLocation(
+              profile.id,
+              updatedLocation.coords.latitude,
+              updatedLocation.coords.longitude
+            );
+          }
         }
       );
     }
@@ -199,8 +204,8 @@ export default function MapComponent() {
         <MapView
           style={styles.map}
           initialRegion={{
-            latitude: currentUser.latitude,
-            longitude: currentUser.longitude,
+            latitude: userLocation!.coords.latitude,
+            longitude: userLocation!.coords.longitude,
             latitudeDelta: 0.02,
             longitudeDelta: 0.02,
           }}
@@ -208,8 +213,8 @@ export default function MapComponent() {
           {/* User detail on top of the marker on map */}
           <Marker
             coordinate={{
-              latitude: currentUser.latitude,
-              longitude: currentUser.longitude,
+              latitude: userLocation!.coords.latitude,
+              longitude: userLocation!.coords.longitude,
             }}
             title={currentUser.name}
             description="Your location"
@@ -243,8 +248,8 @@ export default function MapComponent() {
             <Polyline
               coordinates={[
                 {
-                  latitude: currentUser.latitude,
-                  longitude: currentUser.longitude,
+                  latitude: userLocation!.coords.latitude,
+                  longitude: userLocation!.coords.longitude,
                 },
                 {
                   latitude: selectedFriend.latitude,
