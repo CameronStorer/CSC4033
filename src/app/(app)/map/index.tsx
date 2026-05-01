@@ -28,7 +28,8 @@ export default function MapComponent() {
   const [friendIds, setFriendIds] = useState<number[]>([]); // tia: keeps track of who is already your friend
 
   // replace this with your real logged-in user id later if needed
- const currentUserId = Number(currentUser.id ?? 1);
+  //const currentUserId = Number(currentUser.id ?? 1);
+  const currentUserId = profile?.id;
 
   // useMemo : only recompute distance text when selected friend change
   const distanceText = useMemo( () => {
@@ -87,6 +88,12 @@ export default function MapComponent() {
    
     setSearchText(text); // what the user typed
 
+    // throws an error if user id is not a real number
+    if (!currentUserId) {
+      console.log('No current user id found yet');
+      return;
+    }
+
 
     // handles empty input
     if (!text.trim()) {
@@ -103,10 +110,27 @@ export default function MapComponent() {
       // search all users from the database
       const users = await searchUserByUserName(text.trim());
 
+      // get people who blocked you
+      const { data: blockedMe, error: blockedError } = await supabase
+        .from('blocks')
+        .select('blocker_id')
+        .eq('blocked_id', currentUserId);
 
-      // remove yourself from the results
+      // throw error if issue with searchin blocked user
+      if (blockedError) {
+        console.log('block lookup error:', blockedError);
+        return;
+      }
+
+      const hiddenUsersIds = blockedMe?.map((row) => 
+        Number(row.blocker_id)) ?? [];
+
+
+      // remove yourself & people who blocked you from the results
       const filteredUsers = users.filter(
-        (user) => Number(user.id) !== currentUserId
+        (user) => 
+          Number(user.id) !== currentUserId &&
+          !hiddenUsersIds.includes(Number(user.id))
       );
 
 
@@ -216,6 +240,29 @@ export default function MapComponent() {
     // throw any other errors that may appear
   } catch (error) {
     console.log('unfollow error:', error);
+  }
+}
+
+
+async function handleBlockUsers(targetUserId: number) {
+  try {
+
+    const { error } = await supabase
+      .from('blocks')
+      .insert({
+        blocker_id: currentUser,
+        blocked_id: targetUserId,
+      });
+
+    // if supabase throws an error, throw the error on the app
+    if (error) {
+      console.log('unfollow error:', error);
+      return;
+    }
+
+    console.log('User BLOCKED !');
+  } catch (error) {
+      console.log('block user error:', error);
   }
 }
 
