@@ -14,12 +14,12 @@ export default function UserMarker({ coordinate, avatarUrl }: UserMarkerProps) {
         <Marker
             coordinate={coordinate}
             anchor={{ x: 0.5, y: 1 }}
-            tracksViewChanges={false}
+            tracksViewChanges={true}
         >
             <View style={styles.pin}>
                 <View style={styles.avatarCircle}>
                     <Image
-                        source={ avatarUrl ? { uri: avatarUrl } : require('@/assets/images/default-pfp.png') }
+                        source={ avatarUrl ? { uri: avatarUrl } : require('@/assets/images/default-avatar.png') }
                         style={styles.avatar}
                     />
                 </View>
@@ -34,22 +34,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     avatarCircle: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 30,
+        height: 30,
+        borderRadius: 21,
         borderWidth: 3,
-        borderColor: '#5862f7',
+        borderColor: '#154bfb',
         backgroundColor: 'white',
-        overflow: 'hidden',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 4,
-        elevation: 5,
     },
     avatar: {
-        width: 42,
-        height: 42,
+        width: 24,
+        height: 25,
+        borderRadius: 21,
     },
     point: {
         width: 0,
@@ -59,6 +58,6 @@ const styles = StyleSheet.create({
         borderTopWidth: 10,
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
-        borderTopColor: '#5862f7',
+        borderTopColor: '#15fbef',
     },
 });

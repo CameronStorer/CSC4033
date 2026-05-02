@@ -9,6 +9,7 @@ import type { UserLocation as FriendSearchUser } from '@/types/friend';
 import { styles } from '@/app/(app)/map/_styles'; // Use your external styles
 import ProfileModal from '@/components/ProfileModal';
 import { getCurrentUserProfile, UserProfile, updateUserLocation } from '@/services/profileService';
+import UserMarker from '@/components/user-marker';
 
 export default function MapComponent() {
   // the current selected friend, then use the function, base on select state
@@ -217,13 +218,12 @@ export default function MapComponent() {
           }}
         >
           {/* User detail on top of the marker on map */}
-          <Marker
+          <UserMarker
             coordinate={{
               latitude: userLocation!.coords.latitude,
               longitude: userLocation!.coords.longitude,
             }}
-            title={currentUser.name}
-            description="Your location"
+            avatarUrl={ profile?.avatar_url ?? null }
           />
 
           {friends.map((friend) => (
