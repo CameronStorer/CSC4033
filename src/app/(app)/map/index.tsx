@@ -8,9 +8,11 @@ import { searchUserByUserName, sendFriendRequest, cancelFriendRequest} from '@/s
 import type { UserLocation as FriendSearchUser } from '@/types/friend';
 import { styles } from '@/app/(app)/map/_styles'; // Use your external styles
 import ProfileModal from '@/components/ProfileModal';
+import FriendRequestNotificationModal from '@/components/FriendRequestNotificationModal';
 import { getCurrentUserProfile, UserProfile, updateUserLocation } from '@/services/profileService';
 import { supabase } from '@/components/supabase'; // tia
 import UserMarker from '@/components/user-marker';
+import {getIncomingFriendRequests,acceptFriendRequest,deleteFriendRequest,} from '@/services/notificationService';
 
 export default function Map() {
   // the current selected friend, then use the function, base on select state
@@ -23,10 +25,16 @@ export default function Map() {
   const [searchResults, setSearchResults] = useState<FriendSearchUser[]>([]);
   const [requestedIds, setRequestedIds] = useState<number[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
   const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null);
   const [permissionGranted, setPermissionGranted] = useState<boolean | null>(null);
   const [friendIds, setFriendIds] = useState<number[]>([]); // tia: keeps track of who is already your friend
   const [friendCounts, setFriendCounts] = useState<Record<number, number>>({}); // store user friend count
+
+  //Notificaiton
+  const [notificationVisible, setNotificationVisible] = useState(false);
+  const [incomingRequests, setIncomingRequests] = useState<any[]>([]);
+  const hasNotifications = incomingRequests.length > 0;
 
   // useMemo : only recompute distance text when selected friend change
   const distanceText = useMemo( () => {
@@ -41,6 +49,11 @@ export default function Map() {
   // replace this with your real logged-in user id later if needed
   //const currentUserId = Number(currentUser.id ?? 1);
   const currentUserId = profile?.id;
+  useEffect(() => {
+    if (currentUserId) {
+      loadIncomingRequests();
+    }
+  }, [currentUserId]);
 
   useEffect(() => {
     async function loadProfile(){
@@ -82,7 +95,7 @@ export default function Map() {
     }
   }
 
-  /// function for Handling for Search Bar - add friend 
+  // SEARCH / ADD FRIEND FUNCTIONS
   // tia - made changes so now it shows if they are friends or not
   async function handleSearchChange(text: string) {
     setSearchText(text);
@@ -197,7 +210,6 @@ export default function Map() {
         setIsSearching(false);
       }
   }
-
   async function handleAddFriend(targetUserId: number) {
   if (!currentUserId){
     console.log("No log in user found");
@@ -209,9 +221,51 @@ export default function Map() {
   }catch (error){
     console.log("send friend request error", error);
   }
-}
+  }
+  async function handleCancelRequest(targetUserId: number) {
+    if (!currentUserId) return;
 
-  // tia unfollow function
+    try {
+      await cancelFriendRequest(currentUserId, targetUserId);
+
+      setRequestedIds((prev) => prev.filter((id) => id !== targetUserId ));
+    } catch (error) {
+      console.log('cancel friend request error:', error);
+    }
+  }
+
+  // NOTIFICATION FUNCTIONS
+    async function loadIncomingRequests() {
+    if (!currentUserId) return;
+    try {
+      const requests = await getIncomingFriendRequests(currentUserId);
+      setIncomingRequests(requests);
+    } catch (error) {
+      console.log('load incoming requests error:', error);
+    }
+  }
+  async function handleAcceptRequest(requestId: number, senderId: number) {
+    if (!currentUserId) return;
+    try {
+      await acceptFriendRequest(requestId, currentUserId, senderId);
+      setIncomingRequests((prev) => prev.filter((request) => request.id !== requestId));
+    } 
+    catch (error) {
+      console.log('accept friend request error:', error);
+    }
+  }
+  async function handleDeleteRequest(requestId: number) {
+    try {
+      await deleteFriendRequest(requestId);
+
+      setIncomingRequests((prev) => prev.filter((request) => request.id !== requestId));
+    } 
+    catch (error) {
+      console.log('delete friend request error:', error);
+    }
+  }
+
+  // FRIEND MANAGEMENT FUNCTIONS - tia unfollow function
   async function handleUnfollow(targetUserId: number) {
   try {
 
@@ -237,43 +291,31 @@ export default function Map() {
   } catch (error) {
     console.log('unfollow error:', error);
   }
-}
+  }
 
-  async function handleCancelRequest(targetUserId: number) {
-    if (!currentUserId) return;
-
+  async function handleBlockUsers(targetUserId: number) {
     try {
-      await cancelFriendRequest(currentUserId, targetUserId);
 
-      setRequestedIds((prev) => prev.filter((id) => id !== targetUserId ));
+      const { error } = await supabase
+        .from('blocks')
+        .insert({
+          blocker_id: currentUserId,
+          blocked_id: targetUserId,
+        });
+
+      // if supabase throws an error, throw the error on the app
+      if (error) {
+        console.log('unfollow error:', error);
+        return;
+      }
+
+      console.log('User BLOCKED !');
     } catch (error) {
-      console.log('cancel friend request error:', error);
+        console.log('block user error:', error);
     }
   }
 
-async function handleBlockUsers(targetUserId: number) {
-  try {
-
-    const { error } = await supabase
-      .from('blocks')
-      .insert({
-        blocker_id: currentUserId,
-        blocked_id: targetUserId,
-      });
-
-    // if supabase throws an error, throw the error on the app
-    if (error) {
-      console.log('unfollow error:', error);
-      return;
-    }
-
-    console.log('User BLOCKED !');
-  } catch (error) {
-      console.log('block user error:', error);
-  }
-}
-
-
+  // MODAL FUNCTIONS
   function closeSearchModal() {
     setSearchModalVisible(false);
     setSearchText('');
@@ -441,8 +483,18 @@ async function handleBlockUsers(targetUserId: number) {
         </TouchableOpacity>
 
         {/* notification bell UI only for now */}
-        <TouchableOpacity style={styles.bellCircle}>
+        <TouchableOpacity
+          style={styles.bellCircle}
+          onPress={() => {
+            loadIncomingRequests();
+            setNotificationVisible(true);
+          }}
+        >
           <Text style={styles.circleButtonText}>🔔</Text>
+
+          {hasNotifications && (
+            <View style={styles.notificationDot} />
+          )}
         </TouchableOpacity>
 
         {/* search modal */}
@@ -526,11 +578,18 @@ async function handleBlockUsers(targetUserId: number) {
           </View>
         </Modal>
 
-        {/* Profile Modal */}
         <ProfileModal
           visible={profileVisible}
           onClose={() => setProfileVisible(false)}
           profile={profile}
+        />
+
+        <FriendRequestNotificationModal
+          visible={notificationVisible}
+          onClose={() => setNotificationVisible(false)}
+          requests={incomingRequests}
+          onAccept={handleAcceptRequest}
+          onDelete={handleDeleteRequest}
         />
 
         {selectedFriend && (

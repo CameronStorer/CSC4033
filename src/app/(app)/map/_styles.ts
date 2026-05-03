@@ -177,4 +177,14 @@ export const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
   },
+
+  notificationDot: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: 'red',
+  }
 });
