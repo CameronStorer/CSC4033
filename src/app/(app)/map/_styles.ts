@@ -109,4 +109,14 @@ export const makeStyles = (C: AppColors) => StyleSheet.create({
   },
   requestedButton: { backgroundColor: C.textMuted },
   addButtonText: { color: 'white', fontWeight: '600' },
+
+  notificationDot: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: 'red',
+  }
 });
