@@ -220,7 +220,7 @@ export default function Login() {
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   top: { flex: 0.08, justifyContent: "flex-start", alignItems: "center" },
-  text: { fontSize: 50, fontWeight: "bold", fontFamily: "monospace", color: "#868686", textAlign: "center", margin: 100 },
+  text: { fontSize: 65, fontWeight: "bold", fontFamily: "monospace", color: "#949494", textAlign: "center", margin: 100 },
   centerLoginBox: { position: "absolute", top: 50, right: 0, bottom: 0, left: 0, justifyContent: "center", alignItems: "center" },
   loginBox: {
     shadowOffset: { width: 0, height: 8 },
