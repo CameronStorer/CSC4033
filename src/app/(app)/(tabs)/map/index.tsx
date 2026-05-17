@@ -26,7 +26,7 @@ import IncomingStickerOverlay, { SenderInfo } from '@/components/emoji/IncomingS
 import {
   sendEmojiReaction,
   subscribeToIncomingEmojiReactions,
-  markReactionSeen,
+  markReactionSeen,getUnseenEmojiReactions,
 } from '@/services/emojiReactionService';
 import { EmojiReaction } from '@/types/emojiReaction';
 import { StickerItem } from '@/data/stickers';
@@ -75,10 +75,8 @@ export default function Map() {
 
   // ── Sticker feature state ────────────────────────────────────
 
-  // true = sticker picker sheet is open
   const [stickerSheetVisible, setStickerSheetVisible] = useState(false);
 
-  // holds flying sticker data while animation is playing (null = not flying)
   const [flyingSticker, setFlyingSticker] = useState<{
     sticker: StickerItem;
     sizeMultiplier: number;
@@ -86,11 +84,15 @@ export default function Map() {
     targetY: number;
   } | null>(null);
 
-  // holds the incoming reaction to show (null = overlay hidden)
-  const [incomingReaction, setIncomingReaction] = useState<EmojiReaction | null>(null);
+  // Queue: reactions waiting to be shown (oldest first)
+  const [reactionQueue, setReactionQueue] = useState<EmojiReaction[]>([]);
 
-  // holds the sender profile for the incoming overlay
-  const [incomingSender, setIncomingSender] = useState<SenderInfo | null>(null);
+  // Currently displayed reaction (null = overlay hidden)
+  const [currentReaction, setCurrentReaction] = useState<EmojiReaction | null>(null);
+  const [currentSender, setCurrentSender]     = useState<SenderInfo | null>(null);
+
+  // Prevents showing two overlays at the same time
+  const isShowingReaction = useRef(false);
 
   // useMemo : only recompute distance text when selected friend change
   const distanceText = useMemo( () => {
@@ -119,11 +121,11 @@ export default function Map() {
     }
   }, [profile?.id]);
 
-  useEffect(() => {
-    if (currentUserId) {
-      loadIncomingRequests();
-    }
-  }, [currentUserId]);
+    useEffect(() => {
+      if (currentUserId) {
+        loadIncomingRequests();
+      }
+    }, [currentUserId]);
 
   // Fetches the latest lat/lng + avatar for every friend and updates map markers.
   // Called on mount and every 10 s from the watchPositionAsync callback.
@@ -166,66 +168,47 @@ export default function Map() {
   }, [profile?.id]);
   const initials = profile?.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) ?? '?';
   
-  // ── Listen for incoming sticker reactions in real time ───────
-  // Starts when map mounts and currentUserId is known.
-  // Supabase Realtime fires the callback whenever someone
-  // inserts a row in emoji_reactions where receiver_id = me.
+  // ── Queue processor ──────────────────────────────────────────
+  // Watches the queue and shows one reaction at a time.
+  // Fires automatically whenever reactionQueue changes.
+  useEffect(() => {
+    if (isShowingReaction.current) return;  // already showing one
+    if (reactionQueue.length === 0) return; // nothing to show
+
+    const [next, ...rest] = reactionQueue;
+    setReactionQueue(rest);
+    isShowingReaction.current = true;
+    resolveSenderAndShow(next);
+  }, [reactionQueue]);
+
+  // ── Fetch unseen reactions + subscribe to Realtime ───────────
+  // A: Fetch from DB on mount → catches offline/missed reactions
+  // B: Realtime → instant delivery while user is online
+  // Both add to the queue — processor handles display order
   useEffect(() => {
     if (!currentUserId) return;
 
+    // A. Fetch unseen reactions from database (offline inbox)
+    getUnseenEmojiReactions(currentUserId)
+      .then((unseen) => {
+        if (unseen.length > 0) {
+          setReactionQueue((prev) => [...prev, ...unseen]);
+        }
+      })
+      .catch((err) =>
+        console.log('[Map] getUnseenEmojiReactions error:', err)
+      );
+
+    // B. Listen for new reactions via Realtime (online delivery)
     const unsubscribe = subscribeToIncomingEmojiReactions(
       currentUserId,
-      async (reaction) => {
-        // 1. Find sender profile — check mapFriends first (already in memory)
-        const friendOnMap = mapFriends.find(
-          (f) => Number(f.id) === reaction.sender_id
-        );
-
-        if (friendOnMap) {
-          setIncomingSender({
-            username: friendOnMap.name,
-            full_name: friendOnMap.name,
-            avatar_url: friendOnMap.avatarUrl,
-          });
-        } else {
-          // Not on map yet — fetch from Supabase
-          try {
-            const { data } = await supabase
-              .from('users')
-              .select('username, full_name, avatar_url')
-              .eq('id', reaction.sender_id)
-              .single();
-            setIncomingSender({
-              username: data?.username ?? 'Someone',
-              full_name: data?.full_name ?? null,
-              avatar_url: data?.avatar_url ?? null,
-            });
-          } catch {
-            setIncomingSender({ username: 'Someone', full_name: null, avatar_url: null });
-          }
-        }
-
-        // 2. Show the incoming overlay
-        setIncomingReaction(reaction);
-
-        // 3. Zoom map to sender location if they shared it
-        if (reaction.sender_lat && reaction.sender_lng) {
-          mapRef.current?.animateToRegion(
-            {
-              latitude: reaction.sender_lat,
-              longitude: reaction.sender_lng,
-              latitudeDelta: 0.02,
-              longitudeDelta: 0.02,
-            },
-            800
-          );
-        }
+      (reaction) => {
+        setReactionQueue((prev) => [...prev, reaction]);
       }
     );
 
-  // Stop listening when map unmounts
-  return () => unsubscribe();
-}, [currentUserId]);
+    return () => unsubscribe();
+  }, [currentUserId]);
 
   // function get the name of place, async- get data from server
   async function handleFriendPress(friend: MapFriend) {
@@ -585,7 +568,69 @@ async function launchFlyingSticker(sticker: StickerItem, sizeMultiplier: number)
       console.log('[Map] launchFlyingSticker error:', error);
     }
   }
+  // ── Looks up sender profile then shows the overlay ───────────
+  // Called by the queue processor for each reaction in the queue.
+  async function resolveSenderAndShow(reaction: EmojiReaction) {
+    // Check mapFriends first — no network call needed
+    const friendOnMap = mapFriends.find(
+      (f) => Number(f.id) === reaction.sender_id
+    );
 
+    if (friendOnMap) {
+      setCurrentSender({
+        username: friendOnMap.name,
+        full_name: friendOnMap.name,
+        avatar_url: friendOnMap.avatarUrl,
+      });
+    } else {
+      // Not a friend on map — fetch from Supabase
+      try {
+        const { data } = await supabase
+          .from('users')
+          .select('username, full_name, avatar_url')
+          .eq('id', reaction.sender_id)
+          .single();
+        setCurrentSender({
+          username: data?.username ?? 'Someone',
+          full_name: data?.full_name ?? null,
+          avatar_url: data?.avatar_url ?? null,
+        });
+      } catch {
+        setCurrentSender({
+          username: 'Someone',
+          full_name: null,
+          avatar_url: null,
+        });
+      }
+    }
+
+    // Zoom map to sender location if shared
+    if (reaction.sender_lat && reaction.sender_lng) {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: reaction.sender_lat,
+          longitude: reaction.sender_lng,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        },
+        800
+      );
+    }
+
+    setCurrentReaction(reaction);
+  }
+
+  // ── Called when IncomingStickerOverlay finishes animating ─────
+  // Marks reaction seen, hides overlay, allows queue to continue.
+  function handleReactionComplete() {
+    if (currentReaction) {
+      markReactionSeen(currentReaction.id);
+    }
+    setCurrentReaction(null);
+    setCurrentSender(null);
+    isShowingReaction.current = false;
+    // reactionQueue useEffect will fire again and show next item
+  }
   // query the user for their location 
   useEffect(() => {
     let subscription: Location.LocationSubscription | null = null;
@@ -966,15 +1011,11 @@ async function launchFlyingSticker(sticker: StickerItem, sizeMultiplier: number)
         )}
 
         {/* ── INCOMING STICKER OVERLAY (receiver side) ──── */}
-        {incomingReaction && incomingSender && (
+        {currentReaction && currentSender && (
           <IncomingStickerOverlay
-            reaction={incomingReaction}
-            senderInfo={incomingSender}
-            onComplete={() => {
-              markReactionSeen(incomingReaction.id);
-              setIncomingReaction(null);
-              setIncomingSender(null);
-            }}
+            reaction={currentReaction}
+            senderInfo={currentSender}
+            onComplete={handleReactionComplete}
           />
         )}
       </View>

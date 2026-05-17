@@ -75,3 +75,27 @@ export async function markReactionSeen(reactionId: string): Promise<void> {
     console.error('[EmojiReactionService] markReactionSeen error:', error);
   }
 }
+
+// ── FETCH all unseen reactions for a user ─────────────────────
+// Called when the map screen mounts.
+// Gets reactions that arrived while user was offline OR
+// reactions that Realtime delivered but were never marked seen.
+// Ordered oldest first so they display in the order they were sent.
+
+export async function getUnseenEmojiReactions(
+  receiverId: number
+): Promise<EmojiReaction[]> {
+  const { data, error } = await supabase
+    .from('emoji_reactions')
+    .select('*')
+    .eq('receiver_id', receiverId)
+    .is('seen_at', null)                          // only unseen
+    .order('created_at', { ascending: true });     // oldest first
+
+  if (error) {
+    console.error('[EmojiReactionService] getUnseenEmojiReactions:', error);
+    throw error;
+  }
+
+  return (data ?? []) as EmojiReaction[];
+}
